@@ -1,0 +1,120 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    >
+
+    <LinearLayout
+        android:layout_width="40dp"
+        android:layout_height="200dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical"
+        android:background="@drawable/project_layout_stroke"
+        >
+
+        <Button
+            android:id="@+id/new_project_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@mipmap/new_project_btn"
+            />
+
+        <Button
+            android:id="@+id/load_project_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@mipmap/load_project_btn"
+            />
+
+        <Button
+            android:id="@+id/export_project_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@mipmap/export_project_btn"
+            />
+
+        <Button
+            android:id="@+id/share_project_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@mipmap/share_project_btn"
+            />
+
+        <Button
+            android:id="@+id/turn_theme_btn"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@mipmap/turn_theme_btn"
+            />
+    </LinearLayout>
+
+    <com.nemo.touchnemo.view.NemoTrackEditor
+        android:id="@+id/track_editor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="90dp"
+        />
+
+
+
+    <Button
+        android:id="@+id/speed_btn"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_margin="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:clickable="true"
+        android:background="@drawable/_1x_speed_black_btn"/>
+
+    <LinearLayout
+        android:id="@+id/btn_layout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <Button
+            android:id="@+id/del_btn"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:background="@drawable/del_black_btn"/>
+
+        <Button
+            android:id="@+id/play_and_pause_btn"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:background="@drawable/play_and_pause_black_btn"
+            />
+
+        <Button
+            android:id="@+id/stop_btn"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:background="@drawable/stop_black_btn"
+            />
+
+        <Button
+            android:id="@+id/add_btn"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:background="@drawable/add_black_btn"
+            />
+    </LinearLayout>
+
+</RelativeLayout>
