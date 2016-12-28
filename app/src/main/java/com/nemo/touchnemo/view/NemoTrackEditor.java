@@ -28,7 +28,7 @@ public class NemoTrackEditor extends LinearLayout {
     private int verMaxScroll = 0;
 
     private Context context = null;
-    private ArrayList<TrackView> trackViewList = null;
+    private ArrayList<NemoTrackView> nemoTrackViewList = null;
 
     private NemoSeekBar nemoSeekBar = null;
     private ScrollView verScrollView = null;
@@ -62,7 +62,7 @@ public class NemoTrackEditor extends LinearLayout {
     }
 
     private void init() {
-        trackViewList = new ArrayList<>();
+        nemoTrackViewList = new ArrayList<>();
         blockSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, height/20, context.getResources().getDisplayMetrics());
 
         setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
@@ -171,23 +171,23 @@ public class NemoTrackEditor extends LinearLayout {
     }
 
     public void addTrack() {
-        TrackView trackView = new TrackView(context, blockSize);
-        trackView.setLayoutParams(new LayoutParams(blockSize, LayoutParams.MATCH_PARENT));
-        trackLayout.addView(trackView);
-        trackViewList.add(trackView);
+        NemoTrackView nemoTrackView = new NemoTrackView(context, blockSize);
+        nemoTrackView.setLayoutParams(new LayoutParams(blockSize, LayoutParams.MATCH_PARENT));
+        trackLayout.addView(nemoTrackView);
+        nemoTrackViewList.add(nemoTrackView);
     }
 
     public void deleteTrack() {
         trackLayout.removeViewAt(trackLayout.getChildCount()-1);
-        trackViewList.remove(trackViewList.size()-1);
+        nemoTrackViewList.remove(nemoTrackViewList.size()-1);
     }
 
     public int getTrackCount() {
-        return trackViewList.size();
+        return nemoTrackViewList.size();
     }
 
     public boolean getNote(int trackNumber, int pos) {
-        return trackViewList.get(trackNumber).getTrackData().getNoteState(pos);
+        return nemoTrackViewList.get(trackNumber).getTrackData().getNoteState(pos);
     }
 
     private String getAlphabetFromInt(int i) {
@@ -229,6 +229,99 @@ public class NemoTrackEditor extends LinearLayout {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             return false;
+        }
+    }
+
+    private static class NemoTrackView extends LinearLayout {
+
+        private int max = 84;
+        private int width = 0;
+        private int height = 0;
+        private int blockSize = 0;
+
+        private View[] noteView = null;
+        private Context context = null;
+        private TrackData trackData = null;
+
+        public NemoTrackView(Context context, int blockSize) {
+            super(context);
+            this.context = context;
+            this.blockSize = blockSize;
+            init();
+        }
+
+        public void  init() {
+            trackData = new TrackData();
+            setOrientation(VERTICAL);
+
+            noteView = new View[max];
+            for (int i = 0;i < max;i ++) {
+                noteView[i] = new View(context);
+                noteView[i].setLayoutParams(new LayoutParams(blockSize, blockSize));
+                noteView[i].setBackgroundResource(R.mipmap.black_nemo1);
+                noteView[i].setTag(new NoteData(i));
+                noteView[i].setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        NoteData noteData = (NoteData) view.getTag();
+                        if (noteData.isEnable()){
+                            view.setBackgroundResource(R.mipmap.black_nemo1);
+                            noteData.setEnable(false);
+                            trackData.setTrack(noteData.getNumber(), noteData.isEnable());
+                        }else {
+                            view.setBackgroundResource(R.mipmap.black_nemo2);
+                            noteData.setEnable(true);
+                            trackData.setTrack(noteData.getNumber(), noteData.isEnable());
+                        }
+                    }
+                });
+                addView(noteView[i]);
+            }
+        }
+
+        public TrackData getTrackData() {
+            return trackData;
+        }
+
+
+        public class TrackData {
+            private ArrayList<Boolean> noteList = null;
+
+            public TrackData() {
+                noteList = new ArrayList<>();
+                for (int i = 0;i < max;i ++) {
+                    noteList.add(false);
+                }
+            }
+
+            public void setTrack(int num, boolean enable) {
+                noteList.set(num, enable);
+            }
+
+            public boolean getNoteState(int num) {
+                return noteList.get(num);
+            }
+        }
+
+        private class NoteData {
+            private int number = 0;
+            private boolean enable = false;
+
+            public NoteData(int number) {
+                this.number = number;
+            }
+
+            public void setEnable(boolean enable) {
+                this.enable = enable;
+            }
+
+            public int getNumber() {
+                return number;
+            }
+
+            public boolean isEnable() {
+                return enable;
+            }
         }
     }
 }

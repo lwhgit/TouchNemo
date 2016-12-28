@@ -1,6 +1,5 @@
 package com.nemo.touchnemo;
 
-import android.app.ProgressDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,6 +8,8 @@ import android.widget.Button;
 import com.nemo.touchnemo.view.NemoTrackEditor;
 
 public class MainActivity extends AppCompatActivity {
+
+    private int speed = 1;
 
     private Button newProjectBtn = null;
     private Button loadProjectBtn = null;
@@ -39,6 +40,21 @@ public class MainActivity extends AppCompatActivity {
         turnThemeBtn = (Button) findViewById(R.id.turn_theme_btn);
 
         speedBtn = (Button) findViewById(R.id.speed_btn);
+        speedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (speed == 1) {
+                    speedBtn.setBackgroundResource(R.drawable._2x_speed_black_btn);
+                    speed = 2;
+                }else if (speed == 2) {
+                    speedBtn.setBackgroundResource(R.drawable._4x_speed_black_btn);
+                    speed = 4;
+                }else if (speed == 4) {
+                    speedBtn.setBackgroundResource(R.drawable._1x_speed_black_btn);
+                    speed = 1;
+                }
+            }
+        });
 
         delTrackBtn = (Button) findViewById(R.id.del_btn);
         delTrackBtn.setOnClickListener(new View.OnClickListener() {
