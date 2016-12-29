@@ -1,10 +1,6 @@
-/**
- * MidiManager
- * Created by Home on 2016-12-29.
- */
+package com.nemo.touchnemo.midiManager;
+
 public class MidiManager
 {
-
-
 
 }
