@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.nemo.touchnemo.Property;
 import com.nemo.touchnemo.R;
 
 import java.util.ArrayList;
@@ -30,11 +31,14 @@ public class NemoTrackEditor extends LinearLayout {
     private Context context = null;
     private ArrayList<NemoTrackView> nemoTrackViewList = null;
 
-    private NemoSeekBar nemoSeekBar = null;
+    private NemoSeekBar nemoVerSeekBar = null;
     private ScrollView verScrollView = null;
+    private HorizontalScrollView trackNumViewScrView = null;
+    private LinearLayout trackNumViewWrapperLayout = null;
     private LinearLayout syllableNameLayout = null;
     private TextView[] syllableNameView = null;
     private LinearLayout allLayout = null;
+    private LinearLayout trackWrapperLayout = null;
     private HorizontalScrollView horScrollView = null;
     private LinearLayout trackLayout = null;
 
@@ -68,23 +72,39 @@ public class NemoTrackEditor extends LinearLayout {
         setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
         setOrientation(HORIZONTAL);
 
-        nemoSeekBar = new NemoSeekBar(context, blockSize, height-100);
-        nemoSeekBar.setMax(500);
-        nemoSeekBar.setProgressListener(new NemoSeekBar.ProgressListener() {
+        nemoVerSeekBar = new NemoSeekBar(context, blockSize, height-100, NemoSeekBar.STYLE_VERTICAL);
+        nemoVerSeekBar.setMax(500);
+        nemoVerSeekBar.setProgressListener(new NemoSeekBar.ProgressListener() {
             @Override
             public void onProgressChanged(int progress) {
-                verScrollView.scrollTo(0, verMaxScroll - (progress*verMaxScroll/nemoSeekBar.getMax()));
+                verScrollView.scrollTo(0, verMaxScroll - (progress*verMaxScroll/nemoVerSeekBar.getMax()));
             }
         });
-        addView(nemoSeekBar);
-
-        verScrollView = new ScrollView(context);
-        verScrollView.setFillViewport(true);
-        verScrollView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        addView(nemoVerSeekBar);
 
         allLayout = new LinearLayout(context);
         allLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        allLayout.setOrientation(HORIZONTAL);
+        allLayout.setOrientation(VERTICAL);
+
+        trackNumViewScrView = new HorizontalScrollView(context);
+        LayoutParams tnvsvParams = new LayoutParams(LayoutParams.MATCH_PARENT, blockSize);
+        tnvsvParams.setMargins(blockSize, 0, 0, 0);
+        trackNumViewScrView.setLayoutParams(tnvsvParams);
+        trackNumViewScrView.setFillViewport(true);
+        trackNumViewScrView.setHorizontalScrollBarEnabled(false);
+
+        trackNumViewWrapperLayout = new LinearLayout(context);
+        trackNumViewWrapperLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        trackNumViewWrapperLayout.setOrientation(HORIZONTAL);
+
+        verScrollView = new ScrollView(context);
+        verScrollView.setFillViewport(true);
+        verScrollView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, height-blockSize));
+        verScrollView.setVerticalScrollBarEnabled(false);
+
+        trackWrapperLayout = new LinearLayout(context);
+        trackWrapperLayout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        trackWrapperLayout.setOrientation(HORIZONTAL);
 
         syllableNameLayout = new LinearLayout(context);
         syllableNameLayout.setLayoutParams(new LayoutParams(blockSize, LayoutParams.MATCH_PARENT));
@@ -96,18 +116,17 @@ public class NemoTrackEditor extends LinearLayout {
             int sya = (83-i)%12;
             syllableNameView[i] = new TextView(context);
             syllableNameView[i].setLayoutParams(new LayoutParams(blockSize, blockSize));
-            syllableNameView[i].setBackgroundResource(R.drawable.black_syallable_name_view);
+            syllableNameView[i].setBackgroundResource(Property.getResource(Property.RESOURCE_SYALLABLE_NAME_VIEW));
             syllableNameView[i].setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
             syllableNameView[i].setPadding(10, 0, 0, 0);
             syllableNameView[i].setTextColor(0xFFFFFFFF);
             syllableNameView[i].setText(getAlphabetFromInt(sya) + "" + oct);
             syllableNameLayout.addView(syllableNameView[i]);
         }
-        allLayout.addView(syllableNameLayout);
 
         horScrollView = new HorizontalScrollView(context);
         horScrollView.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        horScrollView.setHorizontalScrollBarEnabled(true);
+        horScrollView.setHorizontalScrollBarEnabled(false);
         horScrollView.setFillViewport(true);
 
         trackLayout = new LinearLayout(context);
@@ -115,9 +134,13 @@ public class NemoTrackEditor extends LinearLayout {
         trackLayout.setOrientation(HORIZONTAL);
 
         horScrollView.addView(trackLayout);
-        allLayout.addView(horScrollView);
-        verScrollView.addView(allLayout);
-        addView(verScrollView);
+        trackNumViewScrView.addView(trackNumViewWrapperLayout);
+        allLayout.addView(trackNumViewScrView);
+        trackWrapperLayout.addView(syllableNameLayout);
+        trackWrapperLayout.addView(horScrollView);
+        verScrollView.addView(trackWrapperLayout);
+        allLayout.addView(verScrollView);
+        addView(allLayout);
 
         ScrollListener scrollListener = new ScrollListener() {
             @Override
@@ -135,6 +158,7 @@ public class NemoTrackEditor extends LinearLayout {
 
                     verScrollView.scrollBy(0, (int) (oldY-curY));
                     horScrollView.scrollBy((int) (oldX-curX), 0);
+                    trackNumViewScrView.scrollBy((int) (oldX-curX), 0);
                 }else if (action == MotionEvent.ACTION_UP) {
                     firstEvent = true;
                 }
@@ -143,13 +167,14 @@ public class NemoTrackEditor extends LinearLayout {
                 oldY = curY;
 
 
-                nemoSeekBar.setProgress(nemoSeekBar.getMax() - (verScrollView.getScrollY() * nemoSeekBar.getMax() / verMaxScroll));
+                nemoVerSeekBar.setProgress(nemoVerSeekBar.getMax() - (verScrollView.getScrollY() * nemoVerSeekBar.getMax() / verMaxScroll));
                 return true;
             }
         };
 
         verScrollView.setOnTouchListener(scrollListener);
         horScrollView.setOnTouchListener(scrollListener);
+        trackNumViewScrView.setOnTouchListener(scrollListener);
 
         final ProgressDialog progressDialog = ProgressDialog.show(context, "", "Please wait...", false, false);
         postDelayed(new Runnable() {
@@ -175,11 +200,17 @@ public class NemoTrackEditor extends LinearLayout {
         nemoTrackView.setLayoutParams(new LayoutParams(blockSize, LayoutParams.MATCH_PARENT));
         trackLayout.addView(nemoTrackView);
         nemoTrackViewList.add(nemoTrackView);
+
+        TrackNumberView trackNumberView = new TrackNumberView(context, nemoTrackViewList.size());
+        trackNumberView.setLayoutParams(new LayoutParams(blockSize, blockSize));
+        trackNumViewWrapperLayout.addView(trackNumberView);
     }
 
     public void deleteTrack() {
         trackLayout.removeViewAt(trackLayout.getChildCount()-1);
         nemoTrackViewList.remove(nemoTrackViewList.size()-1);
+
+        trackNumViewWrapperLayout.removeViewAt(trackNumViewWrapperLayout.getChildCount()-1);
     }
 
     public int getTrackCount() {
@@ -258,18 +289,18 @@ public class NemoTrackEditor extends LinearLayout {
             for (int i = 0;i < max;i ++) {
                 noteView[i] = new View(context);
                 noteView[i].setLayoutParams(new LayoutParams(blockSize, blockSize));
-                noteView[i].setBackgroundResource(R.mipmap.black_nemo1);
+                noteView[i].setBackgroundResource(Property.getResource(Property.RESOURCE_NEMO_NONE));
                 noteView[i].setTag(new NoteData(i));
                 noteView[i].setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         NoteData noteData = (NoteData) view.getTag();
                         if (noteData.isEnable()){
-                            view.setBackgroundResource(R.mipmap.black_nemo1);
+                            view.setBackgroundResource(Property.getResource(Property.RESOURCE_NEMO_NONE));
                             noteData.setEnable(false);
                             trackData.setTrack(noteData.getNumber(), noteData.isEnable());
                         }else {
-                            view.setBackgroundResource(R.mipmap.black_nemo2);
+                            view.setBackgroundResource(Property.getResource(Property.RESOURCE_NEMO_ENABLE));
                             noteData.setEnable(true);
                             trackData.setTrack(noteData.getNumber(), noteData.isEnable());
                         }
@@ -322,6 +353,24 @@ public class NemoTrackEditor extends LinearLayout {
             public boolean isEnable() {
                 return enable;
             }
+        }
+    }
+
+    private class TrackNumberView extends TextView {
+        private Context context = null;
+        private int num = 0;
+
+        public TrackNumberView(Context context, int num) {
+            super(context);
+            this.context = context;
+            this.num = num;
+            init();
+        }
+
+        private void init() {
+            setBackgroundResource(Property.getResource(Property.RESOURCE_SYALLABLE_NAME_VIEW));
+            setGravity(Gravity.CENTER);
+            setText(String.valueOf(num));
         }
     }
 }
