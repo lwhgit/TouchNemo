@@ -7,6 +7,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -16,6 +17,7 @@ import com.nemo.touchnemo.Property;
 import com.nemo.touchnemo.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by W on 2016-12-26.
@@ -36,7 +38,7 @@ public class NemoTrackEditor extends LinearLayout {
     private HorizontalScrollView trackNumViewScrView = null;
     private LinearLayout trackNumViewWrapperLayout = null;
     private LinearLayout syllableNameLayout = null;
-    private TextView[] syllableNameView = null;
+    private InfoView[] syllableNameView = null;
     private LinearLayout allLayout = null;
     private LinearLayout trackWrapperLayout = null;
     private HorizontalScrollView horScrollView = null;
@@ -110,13 +112,13 @@ public class NemoTrackEditor extends LinearLayout {
         syllableNameLayout.setLayoutParams(new LayoutParams(blockSize, LayoutParams.MATCH_PARENT));
         syllableNameLayout.setOrientation(VERTICAL);
 
-        syllableNameView = new TextView[84];
+        syllableNameView = new InfoView[84];
         for (int i = 0;i <  syllableNameView.length;i ++) {
             int oct = (83-i)/12;
             int sya = (83-i)%12;
-            syllableNameView[i] = new TextView(context);
+            syllableNameView[i] = new InfoView(context);
             syllableNameView[i].setLayoutParams(new LayoutParams(blockSize, blockSize));
-            syllableNameView[i].setBackgroundResource(Property.getResource(Property.RESOURCE_SYALLABLE_NAME_VIEW));
+            syllableNameView[i].setBackgroundResource(Property.getResource(Property.RESOURCE_INFO_VIEW));
             syllableNameView[i].setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
             syllableNameView[i].setPadding(10, 0, 0, 0);
             syllableNameView[i].setTextColor(0xFFFFFFFF);
@@ -145,27 +147,66 @@ public class NemoTrackEditor extends LinearLayout {
         ScrollListener scrollListener = new ScrollListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                float curX = motionEvent.getRawX();
-                float curY = motionEvent.getRawY();
+                float curX = motionEvent.getX();
+                float curY = motionEvent.getY();
                 int action = motionEvent.getAction();
 
-                if (action == MotionEvent.ACTION_MOVE) {
-                    if (firstEvent) {
-                        oldX = curX;
-                        oldY = curY;
-                        firstEvent = false;
+                /*if (motionEvent.getPointerCount()==2) {
+                    float curX2 = motionEvent.getX(1);
+                    float curY2 = motionEvent.getY(1);
+                    float curDis = (float) Math.sqrt(Math.pow(curX - curX2, 2) + Math.pow(curY - curY2, 2));
+
+                    if (action == MotionEvent.ACTION_MOVE) {
+                        if (oldDis == -1) {
+                            System.out.println("F");
+                            oldDis = curDis;
+                        }
+
+                        blockSize += (curDis - oldDis);
+                        if (blockSize < 5) {
+                            blockSize = 5;
+                        }
+
+                        syllableNameLayout.setLayoutParams(new LayoutParams(blockSize, LayoutParams.MATCH_PARENT));
+                        for (View v : syllableNameView) {
+                            v.setLayoutParams(new LayoutParams(blockSize, blockSize));
+                        }
+                        LayoutParams p = new LayoutParams(LayoutParams.MATCH_PARENT, blockSize);
+                        p.setMargins(blockSize, 0, 0, 0);
+                        trackNumViewScrView.setLayoutParams(p);
+                        for (int i = 0;i < nemoTrackViewList.size();i ++) {
+                            trackNumViewWrapperLayout.getChildAt(i).setLayoutParams(new LayoutParams(blockSize, blockSize));
+                            nemoTrackViewList.get(i).setLayoutParams(new LayoutParams(blockSize, LayoutParams.MATCH_PARENT));
+                        }
+                        for (LinearLayout l : nemoTrackViewList) {
+                            for (int i = 0;i < l.getChildCount();i ++) {
+                                View v  = l.getChildAt(i);
+                                v.setLayoutParams(new LayoutParams(blockSize, blockSize));
+                            }
+                        }
+
+                        oldDis = curDis;
                     }
 
-                    verScrollView.scrollBy(0, (int) (oldY-curY));
-                    horScrollView.scrollBy((int) (oldX-curX), 0);
-                    trackNumViewScrView.scrollBy((int) (oldX-curX), 0);
-                }else if (action == MotionEvent.ACTION_UP) {
-                    firstEvent = true;
+                }else*/ if (motionEvent.getPointerCount()==1) {
+                    oldDis = -1;
+                    if (action == MotionEvent.ACTION_MOVE) {
+                        if (firstEvent) {
+                            oldX = curX;
+                            oldY = curY;
+                            firstEvent = false;
+                        }
+
+                        verScrollView.scrollBy(0, (int) (oldY - curY));
+                        horScrollView.scrollBy((int) (oldX - curX), 0);
+                        trackNumViewScrView.scrollBy((int) (oldX - curX), 0);
+                    } else if (action == MotionEvent.ACTION_UP) {
+                        firstEvent = true;
+                    }
+
+                    oldX = curX;
+                    oldY = curY;
                 }
-
-                oldX = curX;
-                oldY = curY;
-
 
                 nemoVerSeekBar.setProgress(nemoVerSeekBar.getMax() - (verScrollView.getScrollY() * nemoVerSeekBar.getMax() / verMaxScroll));
                 return true;
@@ -201,8 +242,11 @@ public class NemoTrackEditor extends LinearLayout {
         trackLayout.addView(nemoTrackView);
         nemoTrackViewList.add(nemoTrackView);
 
-        TrackNumberView trackNumberView = new TrackNumberView(context, nemoTrackViewList.size());
+        InfoView trackNumberView = new InfoView(context);
         trackNumberView.setLayoutParams(new LayoutParams(blockSize, blockSize));
+        trackNumberView.setGravity(Gravity.CENTER);
+        trackNumberView.setTextColor(Property.currentTheme == Property.THEME_BALCK ? 0xFFFFFFFF : 0xFF000000);
+        trackNumberView.setText(String.valueOf(nemoTrackViewList.size()));
         trackNumViewWrapperLayout.addView(trackNumberView);
     }
 
@@ -217,8 +261,30 @@ public class NemoTrackEditor extends LinearLayout {
         return nemoTrackViewList.size();
     }
 
-    public boolean getNote(int trackNumber, int pos) {
+    public boolean getNoteState(int trackNumber, int pos) {
         return nemoTrackViewList.get(trackNumber).getTrackData().getNoteState(pos);
+    }
+
+    public ArrayList<NoteData> getEnableNoteList(int trackNumber) {
+        return nemoTrackViewList.get(trackNumber).getTrackData().getEnableNoteList();
+    }
+
+    public TrackData getTrackData(int trackNumber) {
+        return nemoTrackViewList.get(trackNumber).getTrackData();
+    }
+
+    public void setTheme() {
+        nemoVerSeekBar.setTheme();
+
+        for (int i = 0;i < syllableNameLayout.getChildCount();i ++) {
+            syllableNameLayout.getChildAt(i).setBackgroundResource(Property.getResource(Property.RESOURCE_INFO_VIEW));
+            ((InfoView) syllableNameLayout.getChildAt(i)).setTextColor(Property.currentTheme == Property.THEME_WHITE ? 0xFF000000 : 0xFFFFFFFF);
+        }
+        for (int i = 0;i < trackNumViewWrapperLayout.getChildCount();i ++) {
+            trackNumViewWrapperLayout.getChildAt(i).setBackgroundResource(Property.getResource(Property.RESOURCE_INFO_VIEW));
+            ((InfoView) trackNumViewWrapperLayout.getChildAt(i)).setTextColor(Property.currentTheme == Property.THEME_WHITE ? 0xFF000000 : 0xFFFFFFFF);
+            ((NemoTrackView) trackLayout.getChildAt(i)).setTheme();
+        }
     }
 
     private String getAlphabetFromInt(int i) {
@@ -252,10 +318,12 @@ public class NemoTrackEditor extends LinearLayout {
         }
     }
 
-    class ScrollListener implements OnTouchListener {
+    private class ScrollListener implements OnTouchListener {
         boolean firstEvent = true;
         float oldX = -1;
         float oldY = -1;
+
+        float oldDis = -1;
 
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -265,7 +333,6 @@ public class NemoTrackEditor extends LinearLayout {
 
     private static class NemoTrackView extends LinearLayout {
 
-        private int max = 84;
         private int width = 0;
         private int height = 0;
         private int blockSize = 0;
@@ -281,20 +348,26 @@ public class NemoTrackEditor extends LinearLayout {
             init();
         }
 
+        @Override
+        public void setLayoutParams(ViewGroup.LayoutParams params) {
+            super.setLayoutParams(params);
+        }
+
         public void  init() {
             trackData = new TrackData();
             setOrientation(VERTICAL);
 
-            noteView = new View[max];
-            for (int i = 0;i < max;i ++) {
+            noteView = new View[84];
+            for (int i = 0;i < 84;i ++) {
+                trackData.setTrack(i, false);
                 noteView[i] = new View(context);
                 noteView[i].setLayoutParams(new LayoutParams(blockSize, blockSize));
                 noteView[i].setBackgroundResource(Property.getResource(Property.RESOURCE_NEMO_NONE));
-                noteView[i].setTag(new NoteData(i));
+                noteView[i].setTag(i);
                 noteView[i].setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        NoteData noteData = (NoteData) view.getTag();
+                        NoteData noteData = trackData.getNoteData((int) view.getTag());
                         if (noteData.isEnable()){
                             view.setBackgroundResource(Property.getResource(Property.RESOURCE_NEMO_NONE));
                             noteData.setEnable(false);
@@ -314,63 +387,87 @@ public class NemoTrackEditor extends LinearLayout {
             return trackData;
         }
 
+        public void setTheme() {
+            System.out.println("T");
 
-        public class TrackData {
-            private ArrayList<Boolean> noteList = null;
-
-            public TrackData() {
-                noteList = new ArrayList<>();
-                for (int i = 0;i < max;i ++) {
-                    noteList.add(false);
+            for (int i = 0;i < 84;i ++) {
+                if (trackData.getNoteState(i)) {
+                    noteView[i].setBackgroundResource(Property.getResource(Property.RESOURCE_NEMO_ENABLE));
+                }else {
+                    noteView[i].setBackgroundResource(Property.getResource(Property.RESOURCE_NEMO_NONE));
                 }
-            }
-
-            public void setTrack(int num, boolean enable) {
-                noteList.set(num, enable);
-            }
-
-            public boolean getNoteState(int num) {
-                return noteList.get(num);
-            }
-        }
-
-        private class NoteData {
-            private int number = 0;
-            private boolean enable = false;
-
-            public NoteData(int number) {
-                this.number = number;
-            }
-
-            public void setEnable(boolean enable) {
-                this.enable = enable;
-            }
-
-            public int getNumber() {
-                return number;
-            }
-
-            public boolean isEnable() {
-                return enable;
             }
         }
     }
 
-    private class TrackNumberView extends TextView {
+    private class InfoView extends TextView {
         private Context context = null;
-        private int num = 0;
 
-        public TrackNumberView(Context context, int num) {
+        public InfoView(Context context) {
             super(context);
             this.context = context;
-            this.num = num;
             init();
         }
 
         private void init() {
-            setBackgroundResource(Property.getResource(Property.RESOURCE_SYALLABLE_NAME_VIEW));
-            setGravity(Gravity.CENTER);
-            setText(String.valueOf(num));
+            setBackgroundResource(Property.getResource(Property.RESOURCE_INFO_VIEW));
+        }
+    }
+
+    public static class TrackData {
+        private ArrayList<NoteData> noteList = null;
+
+        public TrackData() {
+            noteList = new ArrayList<>();
+            for (int i = 0;i < 84;i ++) {
+                noteList.add(new NoteData(i, false));
+            }
+        }
+
+        public void setTrack(int num, boolean enable) {
+            NoteData data = new NoteData(num, enable);
+            noteList.set(num, data);
+        }
+
+        public NoteData getNoteData(int position) {
+            return noteList.get(position);
+        }
+
+        public boolean getNoteState(int num) {
+            return noteList.get(num).isEnable();
+        }
+
+        public ArrayList<NoteData> getEnableNoteList() {
+            ArrayList<NoteData> list = new ArrayList<>();
+            for (NoteData data : noteList) {
+                if (data.isEnable()) {
+                    list.add(data);
+                }
+            }
+            return list;
+        }
+
+    }
+
+    public static class NoteData {
+        private int number = 0;
+        private boolean enable = false;
+
+        public NoteData(int number, boolean enable) {
+            this.number = number;
+            this.enable = enable;
+        }
+
+        public void setEnable(boolean enable) {
+            this.enable = enable;
+        }
+
+        public int getNumber() {
+            return number;
+        }
+
+        public boolean isEnable() {
+            return enable;
         }
     }
 }

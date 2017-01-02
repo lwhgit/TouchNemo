@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.nemo.touchnemo.view.NemoTrackEditor;
@@ -14,6 +15,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isPlaying = false;
 
     private RelativeLayout mainLayout = null;
+    private LinearLayout projectLayout = null;
     private Button newProjectBtn = null;
     private Button loadProjectBtn = null;
     private Button exportProjectBtn = null;
@@ -36,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
         mainLayout = (RelativeLayout) findViewById(R.id.main_layout);
 
+        projectLayout = (LinearLayout) findViewById(R.id.project_layout);
+
         newProjectBtn = (Button) findViewById(R.id.new_project_btn);
 
         loadProjectBtn = (Button) findViewById(R.id.load_project_btn);
@@ -48,23 +52,7 @@ public class MainActivity extends AppCompatActivity {
         turnThemeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (Property.currentTheme == Property.THEME_BALCK) {
-                    Property.currentTheme = Property.THEME_WHITE;
-                }else if (Property.currentTheme == Property.THEME_WHITE) {
-                    Property.currentTheme = Property.THEME_BALCK;
-                }
-
-                if (speed == 1) {
-                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X1_BUTTON));
-                }else if (speed == 2) {
-                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X2_BUTTON));
-                }else if (speed == 4) {
-                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X4_BUTTON));
-                }
-                delTrackBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_DELETE_BUTTON));
-                playNpauseBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_PLAY_N_PAUSE_BUTTON));
-                stopBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_STOP_BUTTON));
-                addBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_ADD_BUTTON));
+                changeTheme();
             }
         });
 
@@ -73,13 +61,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (speed == 1) {
-                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X1_BUTTON));
+                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X2_BUTTON));
                     speed = 2;
                 }else if (speed == 2) {
-                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X2_BUTTON));
+                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X4_BUTTON));
                     speed = 4;
                 }else if (speed == 4) {
-                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X4_BUTTON));
+                    speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X1_BUTTON));
                     speed = 1;
                 }
             }
@@ -114,5 +102,35 @@ public class MainActivity extends AppCompatActivity {
         });
 
         nemoTrackEditor = (NemoTrackEditor) findViewById(R.id.track_editor);
+    }
+
+    private void changeTheme() {
+        if (Property.currentTheme == Property.THEME_BALCK) {
+            Property.currentTheme = Property.THEME_WHITE;
+        }else if (Property.currentTheme == Property.THEME_WHITE) {
+            Property.currentTheme = Property.THEME_BALCK;
+        }
+
+        newProjectBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_PROJECT_NEW));
+        loadProjectBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_PROJECT_LOAD));
+        exportProjectBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_PROJECT_EXPORT));
+        shareProjectBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_PROJECT_SHARE));
+        turnThemeBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_TURN_THEME));
+
+        mainLayout.setBackgroundResource(Property.getResource(Property.RESOURCE_MAIN_LAYOUT));
+        if (speed == 1) {
+            speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X1_BUTTON));
+        }else if (speed == 2) {
+            speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X2_BUTTON));
+        }else if (speed == 4) {
+            speedBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_X4_BUTTON));
+        }
+
+        nemoTrackEditor.setTheme();
+        projectLayout.setBackgroundResource(Property.getResource(Property.RESOURCE_PROJECT_LAYOUT_STROKE));
+        delTrackBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_DELETE_BUTTON));
+        playNpauseBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_PLAY_N_PAUSE_BUTTON));
+        stopBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_STOP_BUTTON));
+        addBtn.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_ADD_BUTTON));
     }
 }

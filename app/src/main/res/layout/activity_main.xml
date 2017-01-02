@@ -6,47 +6,48 @@
     >
 
     <LinearLayout
+        android:id="@+id/project_layout"
         android:layout_width="40dp"
         android:layout_height="200dp"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="20dp"
         android:orientation="vertical"
-        android:background="@drawable/project_layout_stroke"
+        android:background="@drawable/project_layout_black_stroke"
         >
 
         <Button
             android:id="@+id/new_project_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@mipmap/new_project_btn"
+            android:background="@mipmap/new_project_btn_black"
             />
 
         <Button
             android:id="@+id/load_project_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@mipmap/load_project_btn"
+            android:background="@mipmap/load_project_btn_black"
             />
 
         <Button
             android:id="@+id/export_project_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@mipmap/export_project_btn"
+            android:background="@mipmap/export_project_btn_black"
             />
 
         <Button
             android:id="@+id/share_project_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@mipmap/share_project_btn"
+            android:background="@mipmap/share_project_btn_black"
             />
 
         <Button
             android:id="@+id/turn_theme_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@mipmap/turn_theme_btn"
+            android:background="@mipmap/turn_theme_btn_black"
             />
     </LinearLayout>
 

@@ -74,7 +74,7 @@ public class NemoSeekBar extends RelativeLayout {
             seekBgParams.addRule(CENTER_HORIZONTAL);
             seekBgView = new View(context);
             seekBgView.setLayoutParams(seekBgParams);
-            seekBgView.setBackgroundColor(0xFFDDDDDD);
+            seekBgView.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_NOTE_SEEK_BAR_PROGRESS_SHAPE));
             addView(seekBgView);
 
             LayoutParams seekViewParams = new LayoutParams(seekSize, seekSize);
@@ -82,7 +82,7 @@ public class NemoSeekBar extends RelativeLayout {
             seekView = new View(context);
             seekView.setLayoutParams(seekViewParams);
             setProgress(50);
-            seekView.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_NOTE_SEEK_BAR_PROGRESS_SHAPE));
+            seekView.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_NOTE_SEEK_BAR_THUMB));
             addView(seekView);
         }else if (style == NemoSeekBar.STYLE_HORIZONTAL) {
             def = - seekSize / 2;
@@ -93,7 +93,7 @@ public class NemoSeekBar extends RelativeLayout {
             seekBgParams.addRule(CENTER_VERTICAL);
             seekBgView = new View(context);
             seekBgView.setLayoutParams(seekBgParams);
-            seekBgView.setBackgroundColor(0xFFDDDDDD);
+            seekBgView.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_NOTE_SEEK_BAR_PROGRESS_SHAPE));
             addView(seekBgView);
 
             LayoutParams seekViewParams = new LayoutParams(seekSize, seekSize);
@@ -101,7 +101,7 @@ public class NemoSeekBar extends RelativeLayout {
             seekView = new View(context);
             seekView.setLayoutParams(seekViewParams);
             setProgress(0);
-            seekView.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_NOTE_SEEK_BAR_PROGRESS_SHAPE));
+            seekView.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_NOTE_SEEK_BAR_THUMB));
             addView(seekView);
         }
     }
@@ -124,6 +124,11 @@ public class NemoSeekBar extends RelativeLayout {
 
     public int getMax() {
         return max;
+    }
+
+    public void setTheme() {
+        seekBgView.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_NOTE_SEEK_BAR_PROGRESS_SHAPE));
+        seekView.setBackgroundResource(Property.getResource(Property.RESOURCE_TRACK_NOTE_SEEK_BAR_THUMB));
     }
 
     public interface ProgressListener {
