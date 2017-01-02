@@ -1,4 +1,4 @@
-package com.nemo.touchnemo.midiManager;
+package com.nemo.touchnemo.midimanager;
 
 public class TrackManager
 {
